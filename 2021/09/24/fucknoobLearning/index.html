@@ -28,7 +28,7 @@
 <meta property="og:description" content="开发技术栈+引言大约是这么个日子，我ff14皇冠了。众所周知导随是痛苦而漫长的，一方面要忍受各种豆芽的折磨，爷新、哑巴芽、脚本哥等等。另一方面还要同时忍受可能排到的noob导师，进行一波线的对，黑的拉。刚好小学了一下springboot框架，便决定以此为需求，制作一个用于记录导随大致情况的网站。 后端上采用经典的springboot整合springMVC以及Mybatis，数据库使用较为上手的my">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2021-09-24T06:29:41.942Z">
-<meta property="article:modified_time" content="2021-09-25T07:30:07.557Z">
+<meta property="article:modified_time" content="2021-11-19T07:16:08.841Z">
 <meta property="article:author" content="kongotea">
 <meta name="twitter:card" content="summary">
 
@@ -181,7 +181,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2021-09-25 15:30:07" itemprop="dateModified" datetime="2021-09-25T15:30:07+08:00">2021-09-25</time>
+                <time title="修改时间：2021-11-19 15:16:08" itemprop="dateModified" datetime="2021-11-19T15:16:08+08:00">2021-11-19</time>
               </span>
 
           
@@ -216,11 +216,11 @@
 <figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;</span></span><br><span class="line"><span class="meta">&lt;!DOCTYPE <span class="meta-keyword">mapper</span> <span class="meta-keyword">PUBLIC</span></span></span><br><span class="line"><span class="meta">        <span class="meta-string">&quot;-//mybatis.org//DTD Mapper 3.0//EN&quot;</span></span></span><br><span class="line"><span class="meta">        <span class="meta-string">&quot;http://mybatis.org/dtd/mybatis-3-mapper.dtd&quot;</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">mapper</span> <span class="attr">namespace</span>=<span class="string">&quot;com.kongotea.fucknoob.mapper.RecordMapper&quot;</span>&gt;</span></span><br></pre></td></tr></table></figure>
 
 <p>上述头文件用作记录参考，反正背是不可能背下来的，以后就来自己博客ctrl+c一下。<br>需要注意的是，namespace命名空间对应的类名需要对应接口的<strong>全类名</strong>，即从主包开始所有包名都要包含其中。</p>
-<h2 id="实现mysql的主键自增"><a href="#实现mysql的主键自增" class="headerlink" title="实现mysql的主键自增"></a>实现mysql的主键自增</h2><p>实际上Mybatis提供了对应部分常用数据库的主键自增操作，例如：</p>
+<h4 id="实现mysql的主键自增"><a href="#实现mysql的主键自增" class="headerlink" title="实现mysql的主键自增"></a>实现mysql的主键自增</h4><p>实际上Mybatis提供了对应部分常用数据库的主键自增操作，例如：</p>
 <figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">insert</span> <span class="attr">id</span>=<span class="string">&quot;save&quot;</span> <span class="attr">parameterType</span>=<span class="string">&quot;com.kongotea.fucknoob.entity.Record&quot;</span> <span class="attr">keyProperty</span>=<span class="string">&quot;recordId&quot;</span> <span class="attr">useGeneratedKeys</span>=<span class="string">&quot;true&quot;</span>&gt;</span></span><br><span class="line">    insert into record(record_user,record_number,raid_name,comment,user_job) values(#&#123;recordUser&#125;,#&#123;recordNumber&#125;,#&#123;raidName&#125;,#&#123;comment&#125;,#&#123;userJob&#125;)</span><br><span class="line"><span class="tag">&lt;/<span class="name">insert</span>&gt;</span></span><br></pre></td></tr></table></figure>
 
 <p>在insert标签中添加了 keyProperty 和 useGeneratedKeys 实现了主键自增操作，其中 useGeneratedKeys 属性指定为true时，Mybatis会自动识别为主键自增，keyProperty指定的属性名即为主键。<br>需要注意的是，keyProperty指定的属性名为实体类中的属性名，而不是数据表中的属性名。<br>该过程可以描述为：<br><strong>业务执行crud操作 –&gt; 调用mybatis将数据存储持久化到数据库中 –&gt; 数据库自动添加主键并存储数据</strong><br>可以看出，在数据被存储进数据库之前，交给mybatis存储的实例对象数据<em>主键属性是没有值的</em>，故而在mybatis中，keyProperty属性将主键属性识别为主键后再向数据库传递，避免报错。</p>
-<h2 id="驼峰和下划线，记得转换捏"><a href="#驼峰和下划线，记得转换捏" class="headerlink" title="驼峰和下划线，记得转换捏"></a>驼峰和下划线，记得转换捏</h2><p>当然众所周知的，在java书写习惯中，对于变量名我们习惯用驼峰命名法，比如一个叫<em>索尼大法好</em>的变量，使用驼峰命名法后应该叫：<em>playStationIsTheGodOfTheWorld</em>。<br>然而在数据库中，我们习惯使用<em>play_station_is_the_god_of_the_world</em>的方式去命名这个变量。<br>本着为全世界各式各样的程序员服务的观念，mybatis并没有直接的提供变量命名之间的转换，于是就需要我们在application配置文件中手动开启：</p>
+<h4 id="驼峰和下划线，记得转换捏"><a href="#驼峰和下划线，记得转换捏" class="headerlink" title="驼峰和下划线，记得转换捏"></a>驼峰和下划线，记得转换捏</h4><p>当然众所周知的，在java书写习惯中，对于变量名我们习惯用驼峰命名法，比如一个叫<em>索尼大法好</em>的变量，使用驼峰命名法后应该叫：<em>playStationIsTheGodOfTheWorld</em>。<br>然而在数据库中，我们习惯使用<em>play_station_is_the_god_of_the_world</em>的方式去命名这个变量。<br>本着为全世界各式各样的程序员服务的观念，mybatis并没有直接的提供变量命名之间的转换，于是就需要我们在application配置文件中手动开启：</p>
 <figure class="highlight yml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">mybatis:</span></span><br><span class="line">  <span class="attr">mapper-locations:</span> <span class="string">classpath:/mapper/*.xml</span></span><br><span class="line">  <span class="attr">type-aliases-package:</span> <span class="string">com.kongotea.fucknoob.entity</span></span><br><span class="line">  <span class="attr">configuration:</span></span><br><span class="line">    <span class="attr">call-setters-on-nulls:</span> <span class="literal">true</span></span><br><span class="line">    <span class="attr">map-underscore-to-camel-case:</span> <span class="literal">true</span></span><br></pre></td></tr></table></figure>
 
 <p>map-underscore-to-camel-case属性就是下换线与驼峰之间的转换。</p>
@@ -243,7 +243,10 @@
     <a href="/2021/05/05/springLearning/" rel="prev" title="Spring框架的学习笔记">
       <i class="fa fa-chevron-left"></i> Spring框架的学习笔记
     </a></div>
-      <div class="post-nav-item"></div>
+      <div class="post-nav-item">
+    <a href="/2021/10/03/vueLearning/" rel="next" title="vue的学习笔记">
+      vue的学习笔记 <i class="fa fa-chevron-right"></i>
+    </a></div>
     </div>
       </footer>
     
@@ -302,7 +305,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%BC%80%E5%8F%91%E6%8A%80%E6%9C%AF%E6%A0%88-%E5%BC%95%E8%A8%80"><span class="nav-number">1.</span> <span class="nav-text">开发技术栈+引言</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8F%82%E6%95%B0%E7%9A%84%E4%B8%80%E7%99%BE%E7%A7%8D%E6%8E%A5%E6%94%B6%E6%96%B9%E6%B3%95"><span class="nav-number">2.</span> <span class="nav-text">参数的一百种接收方法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%9C%BA%E5%B7%A7mapper%E4%B8%8D%E4%BC%9A%E6%8A%A5%E9%94%99"><span class="nav-number">3.</span> <span class="nav-text">机巧mapper不会报错</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AE%9E%E7%8E%B0mysql%E7%9A%84%E4%B8%BB%E9%94%AE%E8%87%AA%E5%A2%9E"><span class="nav-number"></span> <span class="nav-text">实现mysql的主键自增</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%A9%BC%E5%B3%B0%E5%92%8C%E4%B8%8B%E5%88%92%E7%BA%BF%EF%BC%8C%E8%AE%B0%E5%BE%97%E8%BD%AC%E6%8D%A2%E6%8D%8F"><span class="nav-number"></span> <span class="nav-text">驼峰和下划线，记得转换捏</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%8F%90%E9%86%92%E6%88%91%E8%87%AA%E5%B7%B1%E7%9A%84"><span class="nav-number"></span> <span class="nav-text">提醒我自己的</span></a></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%BC%80%E5%8F%91%E6%8A%80%E6%9C%AF%E6%A0%88-%E5%BC%95%E8%A8%80"><span class="nav-number">1.</span> <span class="nav-text">开发技术栈+引言</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8F%82%E6%95%B0%E7%9A%84%E4%B8%80%E7%99%BE%E7%A7%8D%E6%8E%A5%E6%94%B6%E6%96%B9%E6%B3%95"><span class="nav-number">2.</span> <span class="nav-text">参数的一百种接收方法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%9C%BA%E5%B7%A7mapper%E4%B8%8D%E4%BC%9A%E6%8A%A5%E9%94%99"><span class="nav-number">3.</span> <span class="nav-text">机巧mapper不会报错</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%AE%9E%E7%8E%B0mysql%E7%9A%84%E4%B8%BB%E9%94%AE%E8%87%AA%E5%A2%9E"><span class="nav-number">3.1.</span> <span class="nav-text">实现mysql的主键自增</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E9%A9%BC%E5%B3%B0%E5%92%8C%E4%B8%8B%E5%88%92%E7%BA%BF%EF%BC%8C%E8%AE%B0%E5%BE%97%E8%BD%AC%E6%8D%A2%E6%8D%8F"><span class="nav-number">3.2.</span> <span class="nav-text">驼峰和下划线，记得转换捏</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%8F%90%E9%86%92%E6%88%91%E8%87%AA%E5%B7%B1%E7%9A%84"><span class="nav-number"></span> <span class="nav-text">提醒我自己的</span></a></div>
       </div>
       <!--/noindex-->
 
@@ -318,7 +321,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">7</span>
+          <span class="site-state-item-count">9</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
